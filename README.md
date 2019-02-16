@@ -2,6 +2,8 @@
 
 This application build on docker, so you can input some docker command to build
 
+You should input environment variable in `docker-compose.yml` before execute below commands
+
 ```
 move root directory of this project
 $ docker-compose build
