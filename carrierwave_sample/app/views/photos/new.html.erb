@@ -1,0 +1,6 @@
+<h1>Photos#new</h1>
+
+<%= form_with url: photos_path do |form| %>
+  <%= form.file_field :image, multipart: true %>
+  <%= form.submit %>
+<% end %>
