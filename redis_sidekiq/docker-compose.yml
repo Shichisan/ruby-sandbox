@@ -1,0 +1,47 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    volumes:
+      - db-data:/usr/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
+  redis:
+    image: redis:latest
+    command: redis-server
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+  sidekiq:
+    build: .
+    command: sidekiq -C config/sidekiq.yml
+    volumes:
+      - .:/app
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+
+  app:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+      - sidekiq
+
+volumes:
+  redis:
+  db-data:
+    driver: local
